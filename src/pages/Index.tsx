@@ -1,39 +1,67 @@
 import { useMemo } from 'react';
-import { Users, AlertTriangle, TrendingDown, UserCheck } from 'lucide-react';
+import { Users, AlertTriangle, TrendingDown, UserCheck, Loader2 } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import StatCard from '@/components/dashboard/StatCard';
 import ChurnGauge from '@/components/dashboard/ChurnGauge';
 import FeatureImportanceChart from '@/components/dashboard/FeatureImportanceChart';
 import SegmentChurnChart from '@/components/dashboard/SegmentChurnChart';
 import RiskDistributionChart from '@/components/dashboard/RiskDistributionChart';
-import UserTable from '@/components/dashboard/UserTable';
+import SpotifyUserTable from '@/components/dashboard/SpotifyUserTable';
+import { useSpotifyData } from '@/hooks/useSpotifyData';
 import {
-  mockUsers,
-  getSegmentChurnData,
+  getSubscriptionChurnData,
   getAgeGroupChurnData,
   getRiskDistribution,
-} from '@/data/mockChurnData';
+} from '@/data/spotifyChurnData';
 
 const Index = () => {
+  const { users, loading, error } = useSpotifyData(10000);
+
   const stats = useMemo(() => {
-    const totalUsers = mockUsers.length;
-    const highRiskUsers = mockUsers.filter(u => u.riskCategory === 'High').length;
-    const mediumRiskUsers = mockUsers.filter(u => u.riskCategory === 'Medium').length;
-    const lowRiskUsers = mockUsers.filter(u => u.riskCategory === 'Low').length;
-    const averageChurn = mockUsers.reduce((sum, u) => sum + u.churnProbability, 0) / totalUsers;
+    if (!users.length) return null;
+    
+    const totalUsers = users.length;
+    const highRiskUsers = users.filter(u => u.riskCategory === 'High').length;
+    const mediumRiskUsers = users.filter(u => u.riskCategory === 'Medium').length;
+    const lowRiskUsers = users.filter(u => u.riskCategory === 'Low').length;
+    const churnedUsers = users.filter(u => u.churn === 1).length;
+    const churnRate = (churnedUsers / totalUsers) * 100;
 
     return {
       totalUsers,
       highRiskUsers,
       mediumRiskUsers,
       lowRiskUsers,
-      averageChurn,
+      churnedUsers,
+      churnRate,
     };
-  }, []);
+  }, [users]);
 
-  const segmentChurnData = useMemo(() => getSegmentChurnData(mockUsers), []);
-  const ageGroupChurnData = useMemo(() => getAgeGroupChurnData(mockUsers), []);
-  const riskDistribution = useMemo(() => getRiskDistribution(mockUsers), []);
+  const subscriptionChurnData = useMemo(() => getSubscriptionChurnData(users), [users]);
+  const ageGroupChurnData = useMemo(() => getAgeGroupChurnData(users), [users]);
+  const riskDistribution = useMemo(() => getRiskDistribution(users), [users]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading Spotify user data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="w-8 h-8 mx-auto mb-4 text-destructive" />
+          <p className="text-destructive">Failed to load data: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,9 +70,9 @@ const Index = () => {
       <main className="container mx-auto px-4 lg:px-8 py-8">
         {/* Page Title */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-2">User Churn Prediction</h2>
+          <h2 className="text-2xl font-bold mb-2">Spotify User Churn Prediction</h2>
           <p className="text-muted-foreground">
-            Monitor user retention metrics and identify at-risk subscribers
+            XGBoost model predictions on {users.length.toLocaleString()} sampled users
           </p>
         </div>
 
@@ -53,20 +81,20 @@ const Index = () => {
           <StatCard
             title="Total Users"
             value={stats.totalUsers.toLocaleString()}
-            subtitle="Active subscribers"
+            subtitle="Sampled from 434K+"
             icon={<Users className="w-5 h-5" />}
+          />
+          <StatCard
+            title="Churned Users"
+            value={stats.churnedUsers.toLocaleString()}
+            subtitle={`${stats.churnRate.toFixed(1)}% churn rate`}
+            icon={<AlertTriangle className="w-5 h-5" />}
+            trend={{ value: stats.churnRate, isPositive: false }}
           />
           <StatCard
             title="High Risk Users"
             value={stats.highRiskUsers.toLocaleString()}
             subtitle={`${((stats.highRiskUsers / stats.totalUsers) * 100).toFixed(1)}% of total`}
-            icon={<AlertTriangle className="w-5 h-5" />}
-            trend={{ value: 2.3, isPositive: true }}
-          />
-          <StatCard
-            title="Average Churn Risk"
-            value={`${stats.averageChurn.toFixed(1)}%`}
-            subtitle="Across all users"
             icon={<TrendingDown className="w-5 h-5" />}
           />
           <StatCard
@@ -81,19 +109,19 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Overall Churn Gauge */}
           <div className="chart-container flex flex-col items-center justify-center">
-            <h3 className="text-lg font-semibold mb-6 self-start">Overall Churn Probability</h3>
-            <ChurnGauge probability={stats.averageChurn} size="lg" />
+            <h3 className="text-lg font-semibold mb-6 self-start">Actual Churn Rate</h3>
+            <ChurnGauge probability={stats.churnRate} size="lg" />
             <div className="mt-6 grid grid-cols-3 gap-4 w-full">
               <div className="text-center">
-                <p className="text-2xl font-bold text-risk-low">{stats.lowRiskUsers}</p>
+                <p className="text-2xl font-bold text-risk-low">{stats.lowRiskUsers.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Low Risk</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-risk-medium">{stats.mediumRiskUsers}</p>
+                <p className="text-2xl font-bold text-risk-medium">{stats.mediumRiskUsers.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Medium Risk</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-risk-high">{stats.highRiskUsers}</p>
+                <p className="text-2xl font-bold text-risk-high">{stats.highRiskUsers.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">High Risk</p>
               </div>
             </div>
@@ -108,28 +136,28 @@ const Index = () => {
         {/* Segment Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <SegmentChurnChart
-            data={segmentChurnData}
+            data={subscriptionChurnData}
             title="Churn by Subscription"
-            subtitle="High-risk rate per plan type"
+            subtitle="Churn rate per plan type"
           />
           <SegmentChurnChart
             data={ageGroupChurnData}
             title="Churn by Age Group"
-            subtitle="High-risk rate per demographic"
+            subtitle="Churn rate per demographic"
           />
           <RiskDistributionChart data={riskDistribution} />
         </div>
 
         {/* User Table */}
         <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">User Risk Analysis</h3>
-          <UserTable users={mockUsers} />
+          <h3 className="text-xl font-semibold mb-4">User Churn Analysis</h3>
+          <SpotifyUserTable users={users} />
         </div>
 
         {/* Footer */}
         <footer className="text-center py-6 border-t border-border/50">
           <p className="text-sm text-muted-foreground">
-            Churn Analytics Dashboard • Data refreshed every 24 hours
+            Spotify Churn Analytics • XGBoost Model Predictions
           </p>
         </footer>
       </main>

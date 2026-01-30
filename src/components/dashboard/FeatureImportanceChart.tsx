@@ -1,5 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { featureImportanceData } from '@/data/mockChurnData';
+import { featureImportanceData } from '@/data/spotifyChurnData';
 
 const FeatureImportanceChart = () => {
   const chartColors = [

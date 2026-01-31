@@ -14,7 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_filters: {
+        Row: {
+          country_filter: string | null
+          created_at: string
+          filter_name: string
+          id: string
+          profile_id: string
+          risk_filter: string | null
+          subscription_filter: string | null
+        }
+        Insert: {
+          country_filter?: string | null
+          created_at?: string
+          filter_name: string
+          id?: string
+          profile_id: string
+          risk_filter?: string | null
+          subscription_filter?: string | null
+        }
+        Update: {
+          country_filter?: string | null
+          created_at?: string
+          filter_name?: string
+          id?: string
+          profile_id?: string
+          risk_filter?: string | null
+          subscription_filter?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_filters_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spotify_users: {
+        Row: {
+          age: number
+          avg_listening_hours_per_week: number
+          churn: number
+          country: string
+          created_at: string
+          days_since_last_login: number
+          id: string
+          login_frequency_per_week: number
+          monthly_spend_usd: number
+          playlists_created: number
+          risk_category: string
+          songs_skipped_per_week: number
+          subscription_type: string
+          user_id: number
+        }
+        Insert: {
+          age: number
+          avg_listening_hours_per_week: number
+          churn: number
+          country: string
+          created_at?: string
+          days_since_last_login: number
+          id?: string
+          login_frequency_per_week: number
+          monthly_spend_usd: number
+          playlists_created: number
+          risk_category: string
+          songs_skipped_per_week: number
+          subscription_type: string
+          user_id: number
+        }
+        Update: {
+          age?: number
+          avg_listening_hours_per_week?: number
+          churn?: number
+          country?: string
+          created_at?: string
+          days_since_last_login?: number
+          id?: string
+          login_frequency_per_week?: number
+          monthly_spend_usd?: number
+          playlists_created?: number
+          risk_category?: string
+          songs_skipped_per_week?: number
+          subscription_type?: string
+          user_id?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

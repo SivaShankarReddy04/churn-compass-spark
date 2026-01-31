@@ -1,4 +1,5 @@
 import { Activity } from 'lucide-react';
+import UserMenu from './UserMenu';
 
 const DashboardHeader = () => {
   return (
@@ -28,9 +29,7 @@ const DashboardHeader = () => {
                 })}
               </p>
             </div>
-            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-sm font-semibold text-primary">A</span>
-            </div>
+            <UserMenu />
           </div>
         </div>
       </div>

@@ -133,11 +133,6 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
-
-  /* Force dark mode for the dashboard */
-  html {
-    @apply dark;
-  }
 }
 
 @layer components {

@@ -9,25 +9,16 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  activeTab: string;
-  onTabChange: (tab: string) => void;
 }
 
-export function DashboardLayout({ children, activeTab, onTabChange }: DashboardLayoutProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   const isMobile = useIsMobile();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleTabChange = (tab: string) => {
-    onTabChange(tab);
-    setMobileOpen(false);
-  };
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
       {/* Desktop Sidebar */}
-      {!isMobile && (
-        <AppSidebar activeTab={activeTab} onTabChange={onTabChange} />
-      )}
+      {!isMobile && <AppSidebar />}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -43,7 +34,7 @@ export function DashboardLayout({ children, activeTab, onTabChange }: DashboardL
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 w-64">
-                  <AppSidebar activeTab={activeTab} onTabChange={handleTabChange} />
+                  <AppSidebar />
                 </SheetContent>
               </Sheet>
             )}
@@ -75,8 +66,15 @@ export function DashboardLayout({ children, activeTab, onTabChange }: DashboardL
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto p-4 lg:p-6 xl:p-8">
           {children}
+          
+          {/* Footer */}
+          <footer className="text-center py-6 border-t border-border/50 mt-8">
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              ChurnGuard Analytics Platform • XGBoost Model Predictions • Built for Data-Driven Retention Decisions
+            </p>
+          </footer>
         </main>
       </div>
     </div>

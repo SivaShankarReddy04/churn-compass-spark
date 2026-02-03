@@ -45,21 +45,21 @@ const EngagementChurnChart = ({ users }: EngagementChurnChartProps) => {
   };
 
   return (
-    <div className="chart-container">
+    <div className="p-6 rounded-xl border bg-card">
       <h3 className="text-lg font-semibold mb-2">Churn by Engagement Level</h3>
       <p className="text-sm text-muted-foreground mb-6">
         Weekly listening hours vs churn rate
       </p>
-      <div className="h-[280px]">
+      <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
             layout="vertical"
-            margin={{ top: 0, right: 20, bottom: 0, left: 100 }}
+            margin={{ top: 5, right: 30, bottom: 5, left: 100 }}
           >
             <XAxis
               type="number"
-              domain={[0, 'auto']}
+              domain={[0, 100]}
               tickFormatter={(value) => `${value}%`}
               stroke="hsl(var(--muted-foreground))"
               fontSize={12}
@@ -70,6 +70,8 @@ const EngagementChurnChart = ({ users }: EngagementChurnChartProps) => {
               stroke="hsl(var(--muted-foreground))"
               fontSize={11}
               width={95}
+              tickLine={false}
+              axisLine={false}
             />
             <Tooltip
               content={({ active, payload }) => {
@@ -90,12 +92,11 @@ const EngagementChurnChart = ({ users }: EngagementChurnChartProps) => {
                 return null;
               }}
             />
-            <Bar dataKey="churnRate" radius={[0, 4, 4, 0]}>
+            <Bar dataKey="churnRate" radius={[0, 4, 4, 0]} barSize={24}>
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={getBarColor(entry.churnRate)}
-                  className="transition-opacity hover:opacity-80"
                 />
               ))}
             </Bar>

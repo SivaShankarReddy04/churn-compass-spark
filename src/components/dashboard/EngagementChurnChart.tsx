@@ -45,17 +45,17 @@ const EngagementChurnChart = ({ users }: EngagementChurnChartProps) => {
   };
 
   return (
-    <div className="p-6 rounded-xl border bg-card">
+    <div className="p-6 rounded-xl border bg-card min-w-0">
       <h3 className="text-lg font-semibold mb-2">Churn by Engagement Level</h3>
       <p className="text-sm text-muted-foreground mb-6">
         Weekly listening hours vs churn rate
       </p>
-      <div className="h-[280px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[280px] w-full min-w-0">
+        <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={280}>
           <BarChart
             data={data}
             layout="vertical"
-            margin={{ top: 5, right: 30, bottom: 5, left: 100 }}
+            margin={{ top: 5, right: 24, bottom: 5, left: 85 }}
           >
             <XAxis
               type="number"
@@ -69,7 +69,7 @@ const EngagementChurnChart = ({ users }: EngagementChurnChartProps) => {
               dataKey="segment"
               stroke="hsl(var(--muted-foreground))"
               fontSize={11}
-              width={95}
+              width={85}
               tickLine={false}
               axisLine={false}
             />

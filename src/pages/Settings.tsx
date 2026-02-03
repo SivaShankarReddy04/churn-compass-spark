@@ -15,7 +15,8 @@ import {
   Shield,
   Save,
   RotateCcw,
-  User
+  User,
+  IndianRupee
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,8 +30,8 @@ const Settings = () => {
   const [mediumRiskMax, setMediumRiskMax] = useState(60);
 
   // Business Parameters
-  const [arpu, setArpu] = useState('9.99');
-  const [retentionCost, setRetentionCost] = useState('2.50');
+  const [arpu, setArpu] = useState('799');
+  const [retentionCost, setRetentionCost] = useState('200');
   const [customerLifetime, setCustomerLifetime] = useState('24');
 
   // Notifications
@@ -48,8 +49,8 @@ const Settings = () => {
   const handleResetDefaults = () => {
     setLowRiskMax(30);
     setMediumRiskMax(60);
-    setArpu('9.99');
-    setRetentionCost('2.50');
+    setArpu('799');
+    setRetentionCost('200');
     setCustomerLifetime('24');
     setEmailAlerts(true);
     setHighRiskAlerts(true);
@@ -186,7 +187,7 @@ const Settings = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-primary" />
+            <IndianRupee className="w-5 h-5 text-primary" />
             Business Parameters
           </CardTitle>
           <CardDescription>
@@ -198,14 +199,14 @@ const Settings = () => {
             <div className="space-y-2">
               <Label htmlFor="arpu">Average Revenue Per User (ARPU)</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
                 <Input
                   id="arpu"
                   type="number"
                   value={arpu}
                   onChange={(e) => setArpu(e.target.value)}
                   className="pl-7"
-                  step="0.01"
+                  step="1"
                 />
               </div>
               <p className="text-xs text-muted-foreground">Monthly revenue per user</p>
@@ -214,14 +215,14 @@ const Settings = () => {
             <div className="space-y-2">
               <Label htmlFor="retention-cost">Retention Action Cost</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
                 <Input
                   id="retention-cost"
                   type="number"
                   value={retentionCost}
                   onChange={(e) => setRetentionCost(e.target.value)}
                   className="pl-7"
-                  step="0.01"
+                  step="1"
                 />
               </div>
               <p className="text-xs text-muted-foreground">Cost per retention intervention</p>
@@ -242,10 +243,10 @@ const Settings = () => {
           <div className="mt-6 p-4 bg-muted/50 rounded-lg">
             <p className="text-sm font-medium mb-2">Calculated Customer Lifetime Value (CLV)</p>
             <p className="text-2xl font-bold text-primary">
-              ${(parseFloat(arpu) * parseInt(customerLifetime)).toFixed(2)}
+              ₹{(parseFloat(arpu) * parseInt(customerLifetime)).toLocaleString('en-IN')}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              ARPU × Customer Lifetime = ${arpu} × {customerLifetime} months
+              ARPU × Customer Lifetime = ₹{arpu} × {customerLifetime} months
             </p>
           </div>
         </CardContent>
